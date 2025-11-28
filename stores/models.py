@@ -1,7 +1,10 @@
-from profile import Profile
 from django.db import models
 import uuid
 import secrets
+
+from users.models  import Profile
+from . paystack import Paystack
+
 
 # Category
 #men fashion, women fashion, men access, women access
@@ -111,7 +114,7 @@ PAYMENT_METHOD = (
 ORDER_STATUS = (
     ('completed', 'completed'),
     ('pending', 'pending'),
-    ('failed', 'failed')
+    ('failed', 'failed'),
     ('reverse', 'reverse')
 )
 class Order(models.Model):
@@ -149,14 +152,12 @@ class Order(models.Model):
         return self.amount * 100
     
     #verify payment
-    
-    
-
-
-
-
-          
-
-
-
-
+    def verify_payment(self):
+        paystack = Paystack()
+        status, result = paystack.verify_payment(self.ref)
+        if status and result['status'] == "success":
+            if result['amount'] == self.amount_value():
+                self.payment_completed = True
+                self.order_status = "completed"
+                self.save()
+        return status, result

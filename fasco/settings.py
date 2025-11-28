@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     # Register apps here
     'stores.apps.StoresConfig',
     'users.apps.UsersConfig',
-    'restframework',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
